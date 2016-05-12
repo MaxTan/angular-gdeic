@@ -334,6 +334,8 @@
 
 	    __webpack_require__(7)(ngModule);
 	    __webpack_require__(9)(ngModule);
+	    __webpack_require__(11)(ngModule);
+	    __webpack_require__(15)(ngModule);
 
 	};
 
@@ -349,6 +351,298 @@
 
 /***/ },
 /* 8 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+
+	    ngModule.controller('ConfirmController', ConfirmController);
+
+	    ConfirmController.$inject = ['$scope', '$uibModalInstance', 'title', 'message'];
+
+	    function ConfirmController($scope, $uibModalInstance, _title, _message) {
+	        $scope.title = _title;
+	        $scope.message = _message;
+
+	        $scope.ok = ok;
+	        $scope.cancel = cancel;
+
+	        function ok() {
+	            $uibModalInstance.close('ok');
+	        }
+
+	        function cancel() {
+	            $uibModalInstance.dismiss('cancel');
+	        }
+	    }
+	};
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function (ngModule) {
+
+	    __webpack_require__(10)(ngModule);
+
+	}
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+
+	    ngModule.factory('$gdeicCache', $gdeicCache);
+
+	    $gdeicCache.$inject = ['$cacheFactory', '$q', '$gdeic'];
+
+	    function $gdeicCache($cacheFactory, $q, $gdeic) {
+	        var _cacheKeyList = [],
+	            _cache = $cacheFactory('gdeicCache'),
+	            gdeicCache = {
+	                put: function (key, value) {
+	                    _cache.put(key, value);
+	                    $gdeic.toggleItem(_cacheKeyList, key);
+	                },
+	                putAsync: function (key, actionFunc, a3, a4) {
+	                    var params = {}, isAlways;
+
+	                    if (angular.isUndefined(a3) && angular.isUndefined(a4)) {
+	                        isAlways = false;
+	                    } else if (angular.isDefined(a3) && angular.isUndefined(a4)) {
+	                        if (angular.isObject(a3)) {
+	                            params = a3;
+	                            isAlways = false;
+	                        } else if (a3 === true || a3 === false) {
+	                            isAlways = a3;
+	                        }
+	                    } else if (angular.isDefined(a3) && angular.isDefined(a4)) {
+	                        params = a3;
+	                        isAlways = a4;
+	                    }
+	                    isAlways = isAlways || false;
+
+	                    var that = this, deferred = $q.defer(), promise;
+
+	                    if (isAlways) {
+	                        promise = $gdeic.httpPromise(actionFunc(params));
+	                    } else {
+	                        var value = that.get(key);
+	                        if (angular.isUndefined(value)) {
+	                            promise = $gdeic.httpPromise(actionFunc(params));
+	                        } else {
+	                            promise = value;
+	                        }
+	                    }
+
+	                    $q.when(promise).then(function (data) {
+	                        that.put(key, data);
+	                        deferred.resolve(data);
+	                    }, function (reason) {
+	                        deferred.reject(reason);
+	                    }, function (msg) {
+	                        deferred.notify(msg);
+	                    });
+
+	                    return deferred.promise;
+	                },
+	                get: _cache.get,
+	                remove: function (key) {
+	                    _cache.remove(key);
+	                    $gdeic.toggleItem(_cacheKeyList, key);
+	                },
+	                removeAll: function () {
+	                    _cache.removeAll();
+	                    _cacheKeyList = [];
+	                },
+	                info: function () {
+	                    var _info = _cache.info();
+	                    _info.keys = _cacheKeyList;
+	                    return _info;
+	                }
+	            };
+
+	        return gdeicCache;
+	    }
+	};
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function (ngModule) {
+
+	    __webpack_require__(12)(ngModule);
+	    __webpack_require__(13)(ngModule);
+	    __webpack_require__(14)(ngModule);
+
+	}
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+
+	    ngModule.filter('bool', bool);
+
+	    bool.$inject = [];
+
+	    function bool() {
+	        return function (input, rule) {
+	            rule = rule || '是|否';
+	            var params = rule.split('|');
+	            return (input === true) ? params[0].trimAll() : params[1].trimAll();
+	        };
+	    }
+	};
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+
+	    ngModule.filter('switch', switch_);
+
+	    switch_.$inject = [];
+
+	    function switch_() {
+	        return function (input, rule) {
+	            var params = rule.split('|'), i = 0, max = params.length, result = '';
+	            if (angular.isNumber(input)) {
+	                for (; i < max; i++) {
+	                    rule = params[i].split(',');
+	                    if (eval('input' + rule[0])) {
+	                        result = rule[1].trimAll();
+	                    }
+	                }
+	            } else {
+	                for (; i < max; i++) {
+	                    rule = params[i].split(',');
+	                    if (input === rule[0]) {
+	                        result = rule[1].trimAll();
+	                    }
+	                }
+	            }
+	            return result;
+	        }
+	    }
+	};
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+
+	    ngModule.filter('dateInterval', dateInterval);
+
+	    dateInterval.$inject = [];
+
+	    function dateInterval() {
+	        return function (input, rule, type) {
+	            type = type || 'day';
+
+	            var startDate, endDate, interval;
+
+	            if (angular.isArray(input) && input.length === 2) {
+	                if (!angular.isDate(input[0]) && (new Date(input[0])).toString() === 'Invalid Date') {
+	                    return '';
+	                }
+	                if (!angular.isDate(input[1]) && (new Date(input[1])).toString() === 'Invalid Date') {
+	                    return '';
+	                }
+
+	                startDate = data[0].getTime();
+	                endDate = data[1].getTime();
+	            }
+	            if (!angular.isDate(input) && (new Date(input)).toString() === 'Invalid Date') {
+	                return '';
+	            }
+
+	            switch (rule) {
+	                case 'fromToday':
+	                    startDate = new Date();
+	                    endDate = input;
+	                    break;
+	                case 'fromMonthStart':
+	                    startDate = new Date();
+	                    startDate.setDate(1);
+	                    endDate = input;
+	                    break;
+	                case 'fromSeasonStart':
+	                    startDate = new Date();
+	                    startDate.setMonth((startDate.getQuarter() - 1) * 3, 1);
+	                    endDate = input;
+	                    break;
+	                case 'fromYearStart':
+	                    startDate = new Date();
+	                    startDate.setMonth(0, 1);
+	                    endDate = input;
+	                    break;
+	                case 'toToday':
+	                    startDate = input;
+	                    endDate = new Date();
+	                    break;
+	                case 'toMonthEnd':
+	                    startDate = input;
+	                    endDate = new Date();
+	                    endDate.setMonth(endDate.getMonth() + 1, 0);
+	                    break;
+	                case 'toSeasonEnd':
+	                    startDate = input;
+	                    endDate = new Date();
+	                    endDate.setMonth(endDate.getQuarter() * 3, 0);
+	                    break;
+	                case 'toYearEnd':
+	                    startDate = input;
+	                    endDate = new Date();
+	                    endDate.setMonth(12, 0);
+	            }
+
+	            if (angular.isUndefined(startDate) && angular.isUndefined(endDate)) {
+	                return '';
+	            } else {
+	                interval = endDate.getTime() - startDate.getTime();
+	                interval = interval / 1000;
+	            }
+
+	            switch (type) {
+	                case 'year':
+	                    interval = (interval / (60 * 60 * 24)) / 365;
+	                    break;
+	                case 'month':
+	                    interval = (interval / (60 * 60 * 24)) / 30;
+	                    break;
+	                case 'day':
+	                    interval = interval / (60 * 60 * 24);
+	                    break;
+	                case 'hour':
+	                    interval = interval / (60 * 60);
+	                    break;
+	                case 'minute':
+	                    interval = interval / 60;
+	                    break;
+	            }
+
+	            return interval.toFixed(0);
+	        };
+	    }
+	};
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function (ngModule) {
+
+	    __webpack_require__(16)(ngModule);
+
+	}
+
+/***/ },
+/* 16 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -491,7 +785,7 @@
 
 	            return $uibModal.open({
 	                templateUrl: 'gdeic/template/modal/confirm.html',
-	                controller: 'gdeicConfirmController',
+	                controller: 'ConfirmController',
 	                controllerAs: 'app',
 	                size: _size,
 	                backdrop: 'static',
@@ -536,171 +830,6 @@
 	            }
 
 	            return keyFunc;
-	        };
-	    }
-	};
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function (ngModule) {
-
-	    __webpack_require__(10)(ngModule);
-	    __webpack_require__(11)(ngModule);
-	    __webpack_require__(12)(ngModule);
-
-	}
-
-/***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	module.exports = function (ngModule) {
-
-	    ngModule.filter('bool', bool);
-
-	    bool.$inject = [];
-
-	    function bool() {
-	        return function (input, rule) {
-	            rule = rule || '是|否';
-	            var params = rule.split('|');
-	            return (input === true) ? params[0].trimAll() : params[1].trimAll();
-	        };
-	    }
-	};
-
-/***/ },
-/* 11 */
-/***/ function(module, exports) {
-
-	module.exports = function (ngModule) {
-
-	    ngModule.filter('switch', switch_);
-
-	    switch_.$inject = [];
-
-	    function switch_() {
-	        return function (input, rule) {
-	            var params = rule.split('|'), i = 0, max = params.length, result = '';
-	            if (angular.isNumber(input)) {
-	                for (; i < max; i++) {
-	                    rule = params[i].split(',');
-	                    if (eval('input' + rule[0])) {
-	                        result = rule[1].trimAll();
-	                    }
-	                }
-	            } else {
-	                for (; i < max; i++) {
-	                    rule = params[i].split(',');
-	                    if (input === rule[0]) {
-	                        result = rule[1].trimAll();
-	                    }
-	                }
-	            }
-	            return result;
-	        }
-	    }
-	};
-
-/***/ },
-/* 12 */
-/***/ function(module, exports) {
-
-	module.exports = function (ngModule) {
-
-	    ngModule.filter('dateInterval', dateInterval);
-
-	    dateInterval.$inject = [];
-
-	    function dateInterval() {
-	        return function (input, rule, type) {
-	            type = type || 'day';
-
-	            var startDate, endDate, interval;
-
-	            if (angular.isArray(input) && input.length === 2) {
-	                if (!angular.isDate(input[0]) && (new Date(input[0])).toString() === 'Invalid Date') {
-	                    return '';
-	                }
-	                if (!angular.isDate(input[1]) && (new Date(input[1])).toString() === 'Invalid Date') {
-	                    return '';
-	                }
-
-	                startDate = data[0].getTime();
-	                endDate = data[1].getTime();
-	            }
-	            if (!angular.isDate(input) && (new Date(input)).toString() === 'Invalid Date') {
-	                return '';
-	            }
-
-	            switch (rule) {
-	                case 'fromToday':
-	                    startDate = new Date();
-	                    endDate = input;
-	                    break;
-	                case 'fromMonthStart':
-	                    startDate = new Date();
-	                    startDate.setDate(1);
-	                    endDate = input;
-	                    break;
-	                case 'fromSeasonStart':
-	                    startDate = new Date();
-	                    startDate.setMonth((startDate.getQuarter() - 1) * 3, 1);
-	                    endDate = input;
-	                    break;
-	                case 'fromYearStart':
-	                    startDate = new Date();
-	                    startDate.setMonth(0, 1);
-	                    endDate = input;
-	                    break;
-	                case 'toToday':
-	                    startDate = input;
-	                    endDate = new Date();
-	                    break;
-	                case 'toMonthEnd':
-	                    startDate = input;
-	                    endDate = new Date();
-	                    endDate.setMonth(endDate.getMonth() + 1, 0);
-	                    break;
-	                case 'toSeasonEnd':
-	                    startDate = input;
-	                    endDate = new Date();
-	                    endDate.setMonth(endDate.getQuarter() * 3, 0);
-	                    break;
-	                case 'toYearEnd':
-	                    startDate = input;
-	                    endDate = new Date();
-	                    endDate.setMonth(12, 0);
-	            }
-
-	            if (angular.isUndefined(startDate) && angular.isUndefined(endDate)) {
-	                return '';
-	            } else {
-	                interval = endDate.getTime() - startDate.getTime();
-	                interval = interval / 1000;
-	            }
-
-	            switch (type) {
-	                case 'year':
-	                    interval = (interval / (60 * 60 * 24)) / 365;
-	                    break;
-	                case 'month':
-	                    interval = (interval / (60 * 60 * 24)) / 30;
-	                    break;
-	                case 'day':
-	                    interval = interval / (60 * 60 * 24);
-	                    break;
-	                case 'hour':
-	                    interval = interval / (60 * 60);
-	                    break;
-	                case 'minute':
-	                    interval = interval / 60;
-	                    break;
-	            }
-
-	            return interval.toFixed(0);
 	        };
 	    }
 	};
