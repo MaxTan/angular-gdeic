@@ -44,12 +44,10 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	(function (angular) {
-	    var ngApp = angular.module('ngGdeic', ['ngAnimate', 'ui.bootstrap', 'angular-linq']);
+	var ngApp = angular.module('ngGdeic', ['ngAnimate', 'ui.bootstrap', 'angular-linq']);
 
-	    __webpack_require__(1)(angular);
-
-	} (angular));
+	__webpack_require__(1)(angular);
+	__webpack_require__(6)(ngApp);
 
 /***/ },
 /* 1 */
@@ -62,7 +60,7 @@
 	    __webpack_require__(4)(angular);
 	    __webpack_require__(5)(angular);
 
-	}
+	};
 
 /***/ },
 /* 2 */
@@ -326,6 +324,385 @@
 	            }
 	        });
 	    } (Date));
+	};
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function (ngModule) {
+
+	    __webpack_require__(7)(ngModule);
+	    __webpack_require__(9)(ngModule);
+
+	};
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function (ngModule) {
+
+	    __webpack_require__(8)(ngModule);
+
+	}
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+	    'use strict';
+
+	    ngModule.service('$gdeic', $gdeic);
+
+	    $gdeic.$inject = ['$rootScope', '$q', '$location', '$timeout', '$uibModal'];
+
+	    function $gdeic($rootScope, $q, $location, $timeout, $uibModal) {
+	        this.finishInit = function () {
+	            $rootScope.finishInit = true;
+	        };
+	        this.doAfterInit = function (callback) {
+	            $rootScope.finishInit = $rootScope.finishInit || false;
+
+	            if (!$rootScope.finishInit) {
+	                var _unbindWatcher = $rootScope.$watch('finishInit', function (newValue) {
+	                    if (newValue === true) {
+	                        callback();
+	                        _unbindWatcher();
+	                    }
+	                });
+	            } else {
+	                callback();
+	            }
+	        };
+
+	        this.httpDone = function (data, successCallback, successWithCodeCallback) {
+	            if (data.StatusCode >= 0) {
+	                if (angular.isFunction(successCallback)) {
+	                    successCallback(data.Data);
+	                }
+	            } else {
+	                if (angular.isFunction(successWithCodeCallback)) {
+	                    successWithCodeCallback({
+	                        StatusCode: data.StatusCode,
+	                        ErrorMsg: data.ErrorMsg
+	                    });
+	                }
+	            }
+	        };
+	        this.httpPromise = function (action) {
+	            var httpDone = this.httpDone, deferred = $q.defer();
+	            action.$promise.then(function (data) {
+	                httpDone(data, function (data) {
+	                    deferred.resolve(data);
+	                }, function (err) {
+	                    deferred.notify(err);
+	                });
+	            }, function (response) {
+	                deferred.reject(response);
+	            });
+
+	            return deferred.promise;
+	        };
+	        this.holdOn = function (promise, successCallback, errorCallback) {
+	            var deferred = $q.defer();
+	            successCallback = successCallback || angular.noop;
+	            errorCallback = errorCallback || angular.noop;
+	            $rootScope.$broadcast('holdOn', true);
+
+	            promise.then(function (data) {
+	                successCallback(data);
+	                $rootScope.$broadcast('holdOn', false);
+	                deferred.resolve(data);
+
+	            }, function (response) {
+	                errorCallback(response);
+	                $rootScope.$broadcast('holdOn', false);
+	                deferred.reject(response);
+	            });
+
+	            return deferred.promise;
+	        };
+	        this.execAsync = function (callback) {
+	            $timeout(callback);
+	        };
+
+	        this.toggleItem = function (source, item, property) {
+	            var _array = source || [], _idx, _objToToggle;
+
+	            if (angular.isUndefined(property)) {
+	                _objToToggle = item;
+	                _idx = _array.map(function (item) {
+	                    return angular.toJson(item);
+	                }).indexOf(angular.toJson(_objToToggle));
+	            } else if (angular.isString(property)) {
+	                if (item.hasOwnProperty(property)) {
+	                    _objToToggle = item[property];
+	                    _idx = _array.indexOf(_objToToggle);
+	                } else {
+	                    return false;
+	                }
+	            } else {
+	                return false;
+	            }
+
+	            if (_idx > -1) {
+	                _array.splice(_idx, 1);
+	            } else {
+	                _array.push(_objToToggle);
+	            }
+
+	            return true;
+	        };
+
+	        this.goto = function (path, isReplace) {
+	            isReplace = isReplace || false;
+	            $location.path(path);
+	            if (isReplace) {
+	                $location.replace();
+	            }
+	        };
+
+	        this.showConfirmDialog = function (a1, a2, a3) {
+	            var _title, _message, _size, _reg = /^(xs|sm|md|lg)$/;
+	            if (arguments.length === 1) {
+	                if (_reg.test(a1)) {
+	                    _size = a1;
+	                } else {
+	                    _title = a1;
+	                }
+	            } else if (arguments.length === 2) {
+	                _title = a1;
+	                if (_reg.test(a2)) {
+	                    _size = a2;
+	                } else {
+	                    _message = a2;
+	                }
+	            } else {
+	                _title = a1;
+	                _message = a2;
+	                _size = a3;
+	            }
+
+	            _title = _title || '确认删除';
+	            _message = _message || '当前操作不可撤销， 确认要继续吗？';
+	            _size = _size || 'sm';
+
+	            return $uibModal.open({
+	                templateUrl: 'gdeic/template/modal/confirm.html',
+	                controller: 'gdeicConfirmController',
+	                controllerAs: 'app',
+	                size: _size,
+	                backdrop: 'static',
+	                resolve: {
+	                    title: function () { return _title; },
+	                    message: function () { return _message; }
+	                }
+	            });
+	        };
+	        this.showEditDialog = function (config) {
+	            config = config || { setting: {}, resolve: {} };
+	            config.setting.controllerAs = config.setting.controllerAs || 'app';
+
+	            var modalObj = {
+	                size: 'md',
+	                backdrop: 'static',
+	                resolve: {}
+	            },
+	                setting = config.setting,
+	                resolve = config.resolve,
+	                p;
+	            for (p in setting) {
+	                modalObj[p] = setting[p];
+	            }
+	            modalObj.resolve = resolve;
+
+	            return $uibModal.open(modalObj);
+	        };
+
+	        this.makeKeyAccept = function (callback, keyCode) {
+	            keyCode = keyCode || [13];
+
+	            function keyFunc($event) {
+	                var args = [];
+	                for (var i = 1, max = arguments.length; i < max; i++) {
+	                    args[i - 1] = arguments[i];
+	                }
+
+	                if (keyCode.indexOf($event.keyCode) > -1) {
+	                    callback.apply(args);
+	                }
+	            }
+
+	            return keyFunc;
+	        };
+	    }
+	};
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function (ngModule) {
+
+	    __webpack_require__(10)(ngModule);
+	    __webpack_require__(11)(ngModule);
+	    __webpack_require__(12)(ngModule);
+
+	}
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+
+	    ngModule.filter('bool', bool);
+
+	    bool.$inject = [];
+
+	    function bool() {
+	        return function (input, rule) {
+	            rule = rule || '是|否';
+	            var params = rule.split('|');
+	            return (input === true) ? params[0].trimAll() : params[1].trimAll();
+	        };
+	    }
+	};
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+
+	    ngModule.filter('switch', switch_);
+
+	    switch_.$inject = [];
+
+	    function switch_() {
+	        return function (input, rule) {
+	            var params = rule.split('|'), i = 0, max = params.length, result = '';
+	            if (angular.isNumber(input)) {
+	                for (; i < max; i++) {
+	                    rule = params[i].split(',');
+	                    if (eval('input' + rule[0])) {
+	                        result = rule[1].trimAll();
+	                    }
+	                }
+	            } else {
+	                for (; i < max; i++) {
+	                    rule = params[i].split(',');
+	                    if (input === rule[0]) {
+	                        result = rule[1].trimAll();
+	                    }
+	                }
+	            }
+	            return result;
+	        }
+	    }
+	};
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+
+	    ngModule.filter('dateInterval', dateInterval);
+
+	    dateInterval.$inject = [];
+
+	    function dateInterval() {
+	        return function (input, rule, type) {
+	            type = type || 'day';
+
+	            var startDate, endDate, interval;
+
+	            if (angular.isArray(input) && input.length === 2) {
+	                if (!angular.isDate(input[0]) && (new Date(input[0])).toString() === 'Invalid Date') {
+	                    return '';
+	                }
+	                if (!angular.isDate(input[1]) && (new Date(input[1])).toString() === 'Invalid Date') {
+	                    return '';
+	                }
+
+	                startDate = data[0].getTime();
+	                endDate = data[1].getTime();
+	            }
+	            if (!angular.isDate(input) && (new Date(input)).toString() === 'Invalid Date') {
+	                return '';
+	            }
+
+	            switch (rule) {
+	                case 'fromToday':
+	                    startDate = new Date();
+	                    endDate = input;
+	                    break;
+	                case 'fromMonthStart':
+	                    startDate = new Date();
+	                    startDate.setDate(1);
+	                    endDate = input;
+	                    break;
+	                case 'fromSeasonStart':
+	                    startDate = new Date();
+	                    startDate.setMonth((startDate.getQuarter() - 1) * 3, 1);
+	                    endDate = input;
+	                    break;
+	                case 'fromYearStart':
+	                    startDate = new Date();
+	                    startDate.setMonth(0, 1);
+	                    endDate = input;
+	                    break;
+	                case 'toToday':
+	                    startDate = input;
+	                    endDate = new Date();
+	                    break;
+	                case 'toMonthEnd':
+	                    startDate = input;
+	                    endDate = new Date();
+	                    endDate.setMonth(endDate.getMonth() + 1, 0);
+	                    break;
+	                case 'toSeasonEnd':
+	                    startDate = input;
+	                    endDate = new Date();
+	                    endDate.setMonth(endDate.getQuarter() * 3, 0);
+	                    break;
+	                case 'toYearEnd':
+	                    startDate = input;
+	                    endDate = new Date();
+	                    endDate.setMonth(12, 0);
+	            }
+
+	            if (angular.isUndefined(startDate) && angular.isUndefined(endDate)) {
+	                return '';
+	            } else {
+	                interval = endDate.getTime() - startDate.getTime();
+	                interval = interval / 1000;
+	            }
+
+	            switch (type) {
+	                case 'year':
+	                    interval = (interval / (60 * 60 * 24)) / 365;
+	                    break;
+	                case 'month':
+	                    interval = (interval / (60 * 60 * 24)) / 30;
+	                    break;
+	                case 'day':
+	                    interval = interval / (60 * 60 * 24);
+	                    break;
+	                case 'hour':
+	                    interval = interval / (60 * 60);
+	                    break;
+	                case 'minute':
+	                    interval = interval / 60;
+	                    break;
+	            }
+
+	            return interval.toFixed(0);
+	        };
+	    }
 	};
 
 /***/ }
