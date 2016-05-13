@@ -78,7 +78,6 @@ module.exports = function (ngModule) {
                 return item;
             });
             this.currentList = this.currentList.map(function (item) {
-                console.log(item);
                 item.isExpand = that.pagingList[item.$$index].isExpand;
                 return item;
             });
