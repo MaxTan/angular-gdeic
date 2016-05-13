@@ -49,7 +49,7 @@
 	__webpack_require__(1)(ngApp);
 	__webpack_require__(2)(angular);
 	__webpack_require__(7)(ngApp);
-	__webpack_require__(25)(ngApp);
+	__webpack_require__(35)(ngApp);
 
 /***/ },
 /* 1 */
@@ -352,8 +352,9 @@
 
 	    __webpack_require__(8)(ngModule);
 	    __webpack_require__(10)(ngModule);
-	    __webpack_require__(19)(ngModule);
-	    __webpack_require__(23)(ngModule);
+	    __webpack_require__(20)(ngModule);
+	    __webpack_require__(29)(ngModule);
+	    __webpack_require__(33)(ngModule);
 
 	};
 
@@ -404,11 +405,367 @@
 	    __webpack_require__(11)(ngModule);
 	    __webpack_require__(12)(ngModule);
 	    __webpack_require__(13)(ngModule);
+	    __webpack_require__(14)(ngModule);
+	    __webpack_require__(15)(ngModule);
+
+	    __webpack_require__(16)(ngModule);
+	    __webpack_require__(17)(ngModule);
+	    __webpack_require__(18)(ngModule);
+	    __webpack_require__(19)(ngModule);
 
 	}
 
 /***/ },
 /* 11 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+	    'use strict';
+
+	    ngModule.directive('gdeicError', gdeicError);
+
+	    gdeicError.$inject = ['$window'];
+
+	    function gdeicError($window) {
+	        return {
+	            restrict: 'EA',
+	            scope: {
+	                templateUrl: '@'
+	            },
+	            templateUrl: function (tElement, tAttrs) {
+	                return tAttrs.templateUrl || 'gdeic/template/error.html';
+	            },
+	            replace: true,
+	            link: function (scope, iElement, iAttrs, controller, transcludeFn) {
+	                scope.isShowError = false;
+	                scope.error = null;
+
+	                scope.clearMsg = clearMsg;
+
+	                scope.$on('httpErrMsg', function (event, data) {
+	                    if (scope.isShowError) {
+	                        return;
+	                    }
+	                    scope.isShowError = true;
+	                    scope.error = data;
+	                });
+
+	                function clearMsg() {
+	                    if (scope.error.StatusCode === -1) {
+	                        $window.location = 'api/account';
+	                    } else if (scope.error.StatusCode === 500) {
+	                        $window.location.reload();
+	                    }
+	                    scope.isShowError = false;
+	                }
+	            }
+	        };
+	    }
+	};
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+	    'use strict';
+
+	    ngModule.directive('gdeicHoldOn', gdeicHoldOn);
+
+	    gdeicHoldOn.$inject = [];
+
+	    function gdeicHoldOn() {
+	        return {
+	            restrict: 'EA',
+	            scope: {
+	                templateUrl: '@',
+	                holdOnText: '@'
+	            },
+	            templateUrl: function (tElement, tAttrs) {
+	                return tAttrs.templateUrl || 'gdeic/template/hold-on.html';
+	            },
+	            replace: true,
+	            link: function (scope, iElement, iAttrs, controller, transcludeFn) {
+	                scope.$on('holdOn', function (event, data) {
+	                    var _modal = angular.element(document.querySelectorAll('[modal-render]'));
+	                    if (data) {
+	                        _modal.css('z-index', 1000);
+	                    } else {
+	                        _modal.css('z-index', 1050);
+	                    }
+	                    scope.isHoldingOn = data;
+	                });
+	            }
+	        };
+	    }
+	};
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+	    'use strict';
+
+	    ngModule.directive('gdeicLoading', gdeicLoading);
+
+	    gdeicLoading.$inject = [];
+
+	    function gdeicLoading() {
+	        return {
+	            restrict: 'EA',
+	            transclude: true,
+	            scope: {
+	                templateUrl: '@',
+	                isLoading: '=',
+	                loadingClass: '@',
+	                loadingStyle: '@',
+	                loadingText: '@'
+	            },
+	            templateUrl: function (tElement, tAttrs) {
+	                return tAttrs.templateUrl || 'gdeic/template/loading.html';
+	            },
+	            replace: true
+	        };
+	    }
+	};
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+	    'use strict';
+
+	    ngModule.directive('gdeicPaging', gdeicPaging);
+
+	    gdeicPaging.$inject = ['$cPagingModel', '$cGroupingModel'];
+
+	    function gdeicPaging($cPagingModel, $cGroupingModel) {
+	        return {
+	            restrict: 'EA',
+	            scope: {
+	                templateUrl: '@',
+	                hideAlert: '=',
+	                pagingModel: '=',
+	                editMode: '='
+	            },
+	            templateUrl: function (tElement, tAttrs) {
+	                return tAttrs.templateUrl || 'gdeic/template/paging.html';
+	            },
+	            replace: true,
+	            link: function (scope, iElement, iAttrs, controller, transcludeFn) {
+	                if (scope.editMode === true) {
+	                    scope.$watch('pagingModel.currentList', function (newValue, oldValue) {
+	                        var source, pagingIndexes;
+	                        if (angular.isDefined(oldValue) && newValue.length > 0) {
+	                            if (scope.pagingModel.constructor === $cPagingModel) {
+	                                source = scope.pagingModel.getSource();
+	                                pagingIndexes = scope.pagingModel.pagingList.map(function (item) {
+	                                    return item.$$index;
+	                                });
+
+	                                if (angular.equals(oldValue.map(function (item) { return item.$$index; }), newValue.map(function (item) { return item.$$index; }))) {
+	                                    angular.forEach(newValue, function (item) {
+	                                        var idx = item.$$index;
+	                                        source[idx] = item;
+	                                        scope.pagingModel.pagingList[pagingIndexes.indexOf(idx)] = item;
+	                                    });
+	                                    scope.pagingModel.setSource(source);
+	                                }
+	                            } else if (scope.pagingModel.constructor === $cGroupingModel) {
+	                                angular.forEach(newValue, function (item) {
+	                                    scope.pagingModel.pagingList[item.$$index].isExpand = item.isExpand;
+	                                });
+	                            }
+	                        }
+	                    }, true);
+	                }
+	            }
+	        };
+	    }
+	};
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+	    'use strict';
+
+	    ngModule.directive('gdeicArrayText', gdeicArrayText);
+
+	    gdeicArrayText.$inject = [];
+
+	    function gdeicArrayText() {
+	        return {
+	            restrict: 'EA',
+	            transclude: true,
+	            scope: {
+	                source: '=',
+	                property: '@',
+	                splitOf: '@'
+	            },
+	            template: '<span>{{showText}}</span>',
+	            replace: true,
+	            link: function (scope, iElement, iAttrs, controller, transcludeFn) {
+	                var properties = scope.property.split('.'), strProperties = '';
+	                for (var i = 0, max = properties.length; i < max; i++) {
+	                    strProperties += '[\'' + properties[i] + '\']';
+	                }
+
+	                scope.showText = scope.source.map(function (item) {
+	                    return eval('item' + strProperties);
+	                }).join(scope.splitOf);
+	            }
+	        };
+	    }
+	};
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+	    'use strict';
+
+	    ngModule.directive('autoResize', autoResize);
+
+	    autoResize.$inject = ['$window'];
+
+	    function autoResize($window) {
+	        return {
+	            restrict: 'A',
+	            link: function (scope, iElement, iAttrs) {
+	                var _params = iAttrs.autoResize.trimAll().split(','),
+	                    _direction = _params[0],
+	                    _size = parseInt(_params[1]);
+
+	                iElement.css('overflow', 'auto');
+	                resize();
+	                angular.element($window).bind('resize', resize).bind('hashchange', hashchange);
+
+	                function resize() {
+	                    if (_direction === 'width') {
+	                        iElement.css('max-width', ($window, innerWidth - _size) + 'px');
+	                    } else if (_direction === 'height') {
+	                        iElement.css('max-height', ($window, innerHeight - _size) + 'px');
+	                    }
+	                }
+
+	                function hashchange() {
+	                    angular.element($window).unbind('resize', resize).unbind('hashchange', hashchange);
+	                }
+	            }
+	        };
+	    }
+	};
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+	    'use strict';
+
+	    ngModule.directive('gradualShow', gradualShow);
+
+	    gradualShow.$inject = ['$animateCss'];
+
+	    function gradualShow($animateCss) {
+	        return {
+	            restrict: 'A',
+	            link: function (scope, iElement, iAttrs) {
+	                var _isInit = false;
+
+	                scope.$watch(iAttrs.gradualShow, function (newValue, oldValue) {
+	                    if (!_isInit) {
+	                        if (angular.isUndefined(oldValue) || !oldValue) {
+	                            iElement.css({ 'opacity': '0', 'zIndex': '-1' });
+	                        }
+	                        _isInit = true;
+	                    }
+
+	                    if (angular.isUndefined(oldValue) || newValue === oldValue) { return; }
+
+	                    $animateCss(iElement, {
+	                        to: {
+	                            opacity: newValue ? 1 : 0,
+	                            zIndex: newValue ? 99 : -1
+	                        },
+	                        duration: 0.2
+	                    }).start();
+	                });
+	            }
+	        };
+	    }
+	};
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+	    'use strict';
+
+	    ngModule.directive('preventEdit', preventEdit);
+
+	    preventEdit.$inject = [];
+
+	    function preventEdit() {
+	        return {
+	            restrict: 'A',
+	            link: function (scope, iElement, iAttrs) {
+	                if ((iElement[0].tagName === 'INPUT' && iElement.attr('type') === 'text') || iElement[0].tagName === 'TEXTAREA') {
+	                    iElement.bind('focus', function () {
+	                        iElement.attr('readonly', 'readonly');
+	                    })
+	                        .bind('blur', function () {
+	                            iElement.removeAttr('readonly');
+	                        });
+	                }
+	            }
+	        };
+	    }
+	};
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	module.exports = function (ngModule) {
+	    'use strict';
+
+	    ngModule.directive('preventPropagation', preventPropagation);
+
+	    preventPropagation.$inject = [];
+
+	    function preventPropagation() {
+	        return {
+	            restrict: 'A',
+	            link: function (scope, iElement, iAttrs) {
+	                iElement.bind(iAttrs.preventPropagation, function (e) {
+	                    e.stopPropagation();
+	                });
+	            }
+	        };
+	    }
+	};
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function (ngModule) {
+
+	    __webpack_require__(21)(ngModule);
+	    __webpack_require__(22)(ngModule);
+	    __webpack_require__(23)(ngModule);
+
+	}
+
+/***/ },
+/* 21 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -449,7 +806,7 @@
 	};
 
 /***/ },
-/* 12 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -530,21 +887,21 @@
 	};
 
 /***/ },
-/* 13 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
 
-	    __webpack_require__(14)(ngModule);
-	    __webpack_require__(15)(ngModule);
-	    __webpack_require__(16)(ngModule);
-	    __webpack_require__(17)(ngModule);
-	    __webpack_require__(18)(ngModule);
+	    __webpack_require__(24)(ngModule);
+	    __webpack_require__(25)(ngModule);
+	    __webpack_require__(26)(ngModule);
+	    __webpack_require__(27)(ngModule);
+	    __webpack_require__(28)(ngModule);
 
 	}
 
 /***/ },
-/* 14 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -713,7 +1070,7 @@
 	};
 
 /***/ },
-/* 15 */
+/* 25 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -796,7 +1153,6 @@
 	                return item;
 	            });
 	            this.currentList = this.currentList.map(function (item) {
-	                console.log(item);
 	                item.isExpand = that.pagingList[item.$$index].isExpand;
 	                return item;
 	            });
@@ -812,7 +1168,7 @@
 	};
 
 /***/ },
-/* 16 */
+/* 26 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -859,7 +1215,7 @@
 	};
 
 /***/ },
-/* 17 */
+/* 27 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -997,7 +1353,7 @@
 	};
 
 /***/ },
-/* 18 */
+/* 28 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1161,19 +1517,19 @@
 	};
 
 /***/ },
-/* 19 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
 
-	    __webpack_require__(20)(ngModule);
-	    __webpack_require__(21)(ngModule);
-	    __webpack_require__(22)(ngModule);
+	    __webpack_require__(30)(ngModule);
+	    __webpack_require__(31)(ngModule);
+	    __webpack_require__(32)(ngModule);
 
 	}
 
 /***/ },
-/* 20 */
+/* 30 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1193,7 +1549,7 @@
 	};
 
 /***/ },
-/* 21 */
+/* 31 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1227,7 +1583,7 @@
 	};
 
 /***/ },
-/* 22 */
+/* 32 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1329,17 +1685,17 @@
 	};
 
 /***/ },
-/* 23 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
 
-	    __webpack_require__(24)(ngModule);
+	    __webpack_require__(34)(ngModule);
 
 	}
 
 /***/ },
-/* 24 */
+/* 34 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1481,7 +1837,7 @@
 	            _size = _size || 'sm';
 
 	            return $uibModal.open({
-	                templateUrl: 'gdeic/template/modal/confirm.html',
+	                templateUrl: 'gdeic/template/confirm.html',
 	                controller: 'gdeicConfirmController',
 	                controllerAs: 'app',
 	                size: _size,
@@ -1532,7 +1888,7 @@
 	};
 
 /***/ },
-/* 25 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
@@ -1544,21 +1900,22 @@
 
 	    function runFunc($templateCache) {
 
-	        __webpack_require__(26)(templateCache);
+	        __webpack_require__(36)($templateCache);
 
 	    }
 	};
 
 /***/ },
-/* 26 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = function (templateCache) {
+	module.exports = function ($templateCache) {
 	    'use strict';
 
 	    var templates = [
 	        'error.html',
 	        'hold-on.html',
+	        'loading.html',
 	        'paging.html',
 	        'confirm.html'
 	    ],
@@ -1567,24 +1924,25 @@
 
 	    var i = 0, max = templates.length, curr;
 
-	    templateCache.put(url + 'blank.html', '<div></div>');
+	    $templateCache.put(url + 'blank.html', '<div></div>');
 	    for (; i < max; i++) {
 	        curr = templates[i];
-	        $templateCache.put(url + curr, __webpack_require__(27)(entry + curr));
+	        $templateCache.put(url + curr, __webpack_require__(37)(entry + curr));
 	    }
 	};
 
 /***/ },
-/* 27 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var map = {
-		"./template": 26,
-		"./template.js": 26,
-		"./template/confirm.html": 28,
-		"./template/error.html": 29,
-		"./template/hold-on.html": 30,
-		"./template/paging.html": 31
+		"./template": 36,
+		"./template.js": 36,
+		"./template/confirm.html": 38,
+		"./template/error.html": 39,
+		"./template/hold-on.html": 40,
+		"./template/loading.html": 41,
+		"./template/paging.html": 42
 	};
 	function webpackContext(req) {
 		return __webpack_require__(webpackContextResolve(req));
@@ -1597,29 +1955,35 @@
 	};
 	webpackContext.resolve = webpackContextResolve;
 	module.exports = webpackContext;
-	webpackContext.id = 27;
+	webpackContext.id = 37;
 
 
 /***/ },
-/* 28 */
+/* 38 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"modal-header\">\r\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" ng-click=\"cancel()\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">Close</span></button>\r\n    <h4 class=\"modal-title\">{{title}}</h4>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <div class=\"text-center\">{{message}}</div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-default\" ng-click=\"cancel()\">取消</button>\r\n    <button class=\"btn btn-danger\" ng-click=\"ok()\">确定</button>\r\n</div>"
 
 /***/ },
-/* 29 */
+/* 39 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"error\" ng-show=\"isShowError\">\r\n    <div class=\"col-xs-offset-1 col-sm-offset-2 col-xs-10 col-sm-8 col-md-offset-3 col-md-6 error-body\">\r\n        <span class=\"fa fa-times-circle error-bg\"></span>\r\n        <p class=\"error-code\">Error：{{error.StatusCode}}</p>\r\n        <div class=\"error-content\">{{error.ErrorMsg}}</div>\r\n        <div class=\"error-btn\"><button type=\"button\" class=\"btn btn-primary btn-xs\" ng-click=\"clearMsg()\">确 定</button></div>\r\n    </div>\r\n</div>"
 
 /***/ },
-/* 30 */
+/* 40 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"holdOn\" ng-show=\"isHoldingOn\">\r\n    <div class=\"holdOn-body\">\r\n        <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;{{holdOnText || \\'正在操作，请稍后\\'}}...\r\n    </div>\r\n</div>"
+	module.exports = "<div class=\"holdOn\" ng-show=\"isHoldingOn\">\r\n    <div class=\"holdOn-body\">\r\n        <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;{{holdOnText || '正在操作，请稍后'}}...\r\n    </div>\r\n</div>"
 
 /***/ },
-/* 31 */
+/* 41 */
+/***/ function(module, exports) {
+
+	module.exports = "<div style=\"position: relative; min-height: 60px\">\r\n    <div class=\"{{loadingClass || 'text-center'}}\" style=\"position:absolute; width:100%; {{loadingStyle}}\" ng-show=\"isLoading\">\r\n        <br/>\r\n        <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;{{loadingText || '正在加载'}}...<br /><br />\r\n    </div>\r\n    <ng-transclude ng-class=\"{'invisible': isLoading}\"></ng-transclude>\r\n</div>"
+
+/***/ },
+/* 42 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\r\n    <div class=\"text-center\" style=\"border-top: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; padding-top: 20px; padding-bottom: 20px\"\r\n        ng-if=\"!hideAlert\" ng-show=\"pagingModel.pagingListLength === 0\">无匹配记录</div>\r\n    <div class=\"text-center\" ng-show=\"pagingModel.pagingListLength > pagingModel.itemsPerPage\">\r\n        <uib-pagination total-items=\"pagingModel.pagingListLength\" ng-model=\"pagingModel.currentPage\" max-size=\"5\" class=\"pagination-sm\"\r\n            boundary-link-numbers=\"true\" rotate=\"false\" previous-text=\"上一页\" next-text=\"下一页\" items-per-page=\"pagingModel.itemsPerPage\"\r\n            ng-change=\"pagingModel.paging(pagingModel.currentPage)\"></uib-pagination>\r\n    </div>\r\n</div>"

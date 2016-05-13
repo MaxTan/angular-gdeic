@@ -7,7 +7,7 @@ module.exports = function (ngModule) {
 
     function runFunc($templateCache) {
 
-        require('./run/template')(templateCache);
+        require('./run/template')($templateCache);
 
     }
 };

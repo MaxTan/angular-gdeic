@@ -1,9 +1,10 @@
-module.exports = function (templateCache) {
+module.exports = function ($templateCache) {
     'use strict';
 
     var templates = [
         'error.html',
         'hold-on.html',
+        'loading.html',
         'paging.html',
         'confirm.html'
     ],
@@ -12,7 +13,7 @@ module.exports = function (templateCache) {
 
     var i = 0, max = templates.length, curr;
 
-    templateCache.put(url + 'blank.html', '<div></div>');
+    $templateCache.put(url + 'blank.html', '<div></div>');
     for (; i < max; i++) {
         curr = templates[i];
         $templateCache.put(url + curr, require(entry + curr));
