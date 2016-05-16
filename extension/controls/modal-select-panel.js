@@ -3,12 +3,13 @@ module.exports = function (ngModule) {
 
     ngModule.directive('gdeicModalSelectPanel', gdeicModalSelectPanel);
 
-    gdeicModalSelectPanel.$inject = ['$gdeic'];
+    gdeicModalSelectPanel.$inject = ['$templateCache', '$gdeic'];
 
-    function gdeicModalSelectPanel($gdeic) {
+    function gdeicModalSelectPanel($templateCache, $gdeic) {
         return {
             restrict: 'EA',
             scope: {
+                templateUrl: '@',
                 isShow: '=',
                 headerTitle: '@',
                 sourceList: '=',
@@ -19,60 +20,27 @@ module.exports = function (ngModule) {
                 multiSelect: '='
             },
             template: function (tElement, tAttrs) {
-                var strClass, strInput;
-                if (tAttrs.multiSelect === 'true') {
-                    strClass = 'checkbox';
-                    strInput = '<label ng-class="{\'highlight\': isCheck(item)}">'
-                        + '<input type="checkbox" name="items" ng-checked="isCheck(item)" ng-click="selectItem(item)" />&nbsp;&nbsp;{{item.' + tAttrs.valueProperty + '}}'
-                        + '</label>';
+                var template;
+
+                if (angular.isUndefined(tAttrs.templateUrl)) {
+                    if (tAttrs.multiSelect === 'true') {
+                        template = $templateCache.get('gdeic/controls/template/modal-select-panel-multi.html');
+                    } else {
+                        template = $templateCache.get('gdeic/controls/template/modal-select-panel.html');
+                    }
+                    template = template.replace(/\[\[key\]\]/g, tAttrs.keyProperty);
+                    template = template.replace(/\[\[value\]\]/g, tAttrs.valueProperty);
+                    template = template.replace(/\[\[filter\]\]/g, tAttrs.filterProperty);
                 } else {
-                    strClass = 'radio';
-                    strInput = '<label ng-class="{\'highlight\': item.' + tAttrs.keyProperty + ' === selectedItem.' + tAttrs.keyProperty + ' }">'
-                        + '<input type="radio" name="items" ng-checked="isCheck(item)" ng-click="selectItem(item)" />&nbsp;&nbsp;{{item.' + tAttrs.valueProperty + '}}'
-                        + '</label>';
+                    template = '<span ng-include="\'' + tAttrs.templateUrl + '\'"></span>';
                 }
 
-                var template = '<div gradual-show="isShow" style="position:absolute; width:100%; height:100%; top:0">'
-                    + '<div class="modal-select">'
-                    + '<div class="modal-select-header">'
-                    + '<b>{{headerTitle}}</b>'
-                    + '<button type="button" class="close" ng-click="isShow = !isShow">&times;</button>'
-                    + '</div>'
-                    + '<div class="modal-select-filter" ng-if="filterProperty">'
-                    + '<div class="input-group">'
-                    + '<input type="text" class="form-control" ng-model="search.' + tAttrs.filterProperty + '">'
-                    + '<span class="input-group-addon"><span class="glyphicon glyphicon-filter"></span></span>'
-                    + '</div>'
-                    + '</div>'
-                    + '<div class="modal-select-body">'
-                    + '<div class="text-center" ng-show="!sourceList"><br />'
-                    + '<span class="fa fa-spinner anime-spinner"></span>&nbsp;正在加载..'
-                    + '</div>'
-                    + '<p ng-show="sourceList.length === 0">无可选项</p>'
-                    + '<div class="' + strClass + '" ng-repeat="item in sourceList' + (angular.isUndefined(tAttrs.filterProperty) ? '' : ' | filter:search') + '" ng-show="sourceList">'
-                    + strInput
-                    + '</div>'
-                    + '</div>'
-                    + '<div class="modal-select-footer">'
-                    + '<div class="pull-right">'
-                    + '<button type="button" class="btn btn-default btn-xs" ng-click="isShow = !isShow">'
-                    + '<span class="glyphicon glyphicon-remove"></span> 取消' +
-                    '</button>&nbsp;'
-                    + '<button type="button" class="btn btn-warning btn-xs" ng-click="clear()">'
-                    + '<span class="glyphicon glyphicon-trash"></span> 清空'
-                    + '</button>&nbsp;'
-                    + '<button type="button" class="btn btn-primary btn-xs" ng-click="ok()">'
-                    + '<span class="glyphicon glyphicon-ok"></span> 确定'
-                    + '</button>'
-                    + '</div>'
-                    + '</div>'
-                    + '</div>'
-                    + '</div>';
                 return template;
             },
             replace: true,
             link: function (scope, iElement, iAttrs, controller, transcludeFn) {
                 var _originalValue;
+                scope.search = {};
                 if (scope.multiSelect === true) {
                     _originalValue = [];
                 } else {
@@ -80,10 +48,6 @@ module.exports = function (ngModule) {
                     Object.defineProperty(_originalValue, iAttrs.keyProperty, {
                         value: ''
                     });
-                }
-
-                if (angular.isDefined(scope.filterProperty)) {
-                    scope.search = {};
                 }
 
                 scope.$watch('isShow', function (newValue) {

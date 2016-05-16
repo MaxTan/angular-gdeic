@@ -7,9 +7,12 @@ module.exports = function (ngModule) {
 
     function runFunc($templateCache) {
         var templates = [
+            'cascade.html',
             'date-picker.html',
             'file-upload.html',
-            'modal-panel.html'
+            'modal-panel.html',
+            'modal-select-panel.html',
+            'modal-select-panel-multi.html'
         ],
             url = 'gdeic/controls/template/',
             entry = './template/';

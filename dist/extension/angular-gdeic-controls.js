@@ -64,12 +64,13 @@
 
 	    ngModule.directive('gdeicCascade', gdeicCascade);
 
-	    gdeicCascade.$inject = ['$linq', '$gdeic'];
+	    gdeicCascade.$inject = ['$templateCache', '$linq', '$gdeic'];
 
-	    function gdeicCascade($linq, $gdeic) {
+	    function gdeicCascade($templateCache, $linq, $gdeic) {
 	        return {
 	            restrict: 'EA',
 	            scope: {
+	                templateUrl: '@',
 	                inputClass: '@',
 	                ngRequired: '=',
 	                ngDisabled: '=',
@@ -87,10 +88,16 @@
 	                queryParamsAsync: "@"
 	            },
 	            template: function (tElement, tAttrs) {
-	                var template = '<select class="{{inputClass}}" ng-model="selectedModel" ng-change="setValue()" ng-show="showWhenNoOption ? true : itemList.length > 0" ng-required="ngRequired">'
-	                    + '<option value="">--请选择--</option>'
-	                    + '<option ng-repeat="i in itemList" value="{{i.' + tAttrs.keyProperty + '}}" label="{{i.' + tAttrs.valueProperty + '}}"></option>'
-	                    + '</select>';
+	                var template;
+
+	                if (angular.isUndefined(tAttrs.templateUrl)) {
+	                    template = $templateCache.get('gdeic/controls/template/cascade.html');
+	                    template = template.replace(/\[\[key\]\]/g, tAttrs.keyProperty);
+	                    template = template.replace(/\[\[value\]\]/g, tAttrs.valueProperty);
+	                } else {
+	                    template = '<span ng-include="\'' + tAttrs.templateUrl + '\'"></span>';
+	                }
+
 	                return template;
 	            },
 	            replace: true,
@@ -398,12 +405,13 @@
 
 	    ngModule.directive('gdeicModalSelectPanel', gdeicModalSelectPanel);
 
-	    gdeicModalSelectPanel.$inject = ['$gdeic'];
+	    gdeicModalSelectPanel.$inject = ['$templateCache', '$gdeic'];
 
-	    function gdeicModalSelectPanel($gdeic) {
+	    function gdeicModalSelectPanel($templateCache, $gdeic) {
 	        return {
 	            restrict: 'EA',
 	            scope: {
+	                templateUrl: '@',
 	                isShow: '=',
 	                headerTitle: '@',
 	                sourceList: '=',
@@ -414,60 +422,27 @@
 	                multiSelect: '='
 	            },
 	            template: function (tElement, tAttrs) {
-	                var strClass, strInput;
-	                if (tAttrs.multiSelect === 'true') {
-	                    strClass = 'checkbox';
-	                    strInput = '<label ng-class="{\'highlight\': isCheck(item)}">'
-	                        + '<input type="checkbox" name="items" ng-checked="isCheck(item)" ng-click="selectItem(item)" />&nbsp;&nbsp;{{item.' + tAttrs.valueProperty + '}}'
-	                        + '</label>';
+	                var template;
+
+	                if (angular.isUndefined(tAttrs.templateUrl)) {
+	                    if (tAttrs.multiSelect === 'true') {
+	                        template = $templateCache.get('gdeic/controls/template/modal-select-panel-multi.html');
+	                    } else {
+	                        template = $templateCache.get('gdeic/controls/template/modal-select-panel.html');
+	                    }
+	                    template = template.replace(/\[\[key\]\]/g, tAttrs.keyProperty);
+	                    template = template.replace(/\[\[value\]\]/g, tAttrs.valueProperty);
+	                    template = template.replace(/\[\[filter\]\]/g, tAttrs.filterProperty);
 	                } else {
-	                    strClass = 'radio';
-	                    strInput = '<label ng-class="{\'highlight\': item.' + tAttrs.keyProperty + ' === selectedItem.' + tAttrs.keyProperty + ' }">'
-	                        + '<input type="radio" name="items" ng-checked="isCheck(item)" ng-click="selectItem(item)" />&nbsp;&nbsp;{{item.' + tAttrs.valueProperty + '}}'
-	                        + '</label>';
+	                    template = '<span ng-include="\'' + tAttrs.templateUrl + '\'"></span>';
 	                }
 
-	                var template = '<div gradual-show="isShow" style="position:absolute; width:100%; height:100%; top:0">'
-	                    + '<div class="modal-select">'
-	                    + '<div class="modal-select-header">'
-	                    + '<b>{{headerTitle}}</b>'
-	                    + '<button type="button" class="close" ng-click="isShow = !isShow">&times;</button>'
-	                    + '</div>'
-	                    + '<div class="modal-select-filter" ng-if="filterProperty">'
-	                    + '<div class="input-group">'
-	                    + '<input type="text" class="form-control" ng-model="search.' + tAttrs.filterProperty + '">'
-	                    + '<span class="input-group-addon"><span class="glyphicon glyphicon-filter"></span></span>'
-	                    + '</div>'
-	                    + '</div>'
-	                    + '<div class="modal-select-body">'
-	                    + '<div class="text-center" ng-show="!sourceList"><br />'
-	                    + '<span class="fa fa-spinner anime-spinner"></span>&nbsp;正在加载..'
-	                    + '</div>'
-	                    + '<p ng-show="sourceList.length === 0">无可选项</p>'
-	                    + '<div class="' + strClass + '" ng-repeat="item in sourceList' + (angular.isUndefined(tAttrs.filterProperty) ? '' : ' | filter:search') + '" ng-show="sourceList">'
-	                    + strInput
-	                    + '</div>'
-	                    + '</div>'
-	                    + '<div class="modal-select-footer">'
-	                    + '<div class="pull-right">'
-	                    + '<button type="button" class="btn btn-default btn-xs" ng-click="isShow = !isShow">'
-	                    + '<span class="glyphicon glyphicon-remove"></span> 取消' +
-	                    '</button>&nbsp;'
-	                    + '<button type="button" class="btn btn-warning btn-xs" ng-click="clear()">'
-	                    + '<span class="glyphicon glyphicon-trash"></span> 清空'
-	                    + '</button>&nbsp;'
-	                    + '<button type="button" class="btn btn-primary btn-xs" ng-click="ok()">'
-	                    + '<span class="glyphicon glyphicon-ok"></span> 确定'
-	                    + '</button>'
-	                    + '</div>'
-	                    + '</div>'
-	                    + '</div>'
-	                    + '</div>';
 	                return template;
 	            },
 	            replace: true,
 	            link: function (scope, iElement, iAttrs, controller, transcludeFn) {
 	                var _originalValue;
+	                scope.search = {};
 	                if (scope.multiSelect === true) {
 	                    _originalValue = [];
 	                } else {
@@ -475,10 +450,6 @@
 	                    Object.defineProperty(_originalValue, iAttrs.keyProperty, {
 	                        value: ''
 	                    });
-	                }
-
-	                if (angular.isDefined(scope.filterProperty)) {
-	                    scope.search = {};
 	                }
 
 	                scope.$watch('isShow', function (newValue) {
@@ -550,8 +521,8 @@
 	        return {
 	            restrict: 'EA',
 	            scope: {
-	                treeData: '=',
 	                templateUrl: '@',
+	                treeData: '=',
 	                isExpandRoot: '=',
 	                isMultiChecked: '=',
 	                selectedModel: '=',
@@ -649,9 +620,12 @@
 
 	    function runFunc($templateCache) {
 	        var templates = [
+	            'cascade.html',
 	            'date-picker.html',
 	            'file-upload.html',
-	            'modal-panel.html'
+	            'modal-panel.html',
+	            'modal-select-panel.html',
+	            'modal-select-panel-multi.html'
 	        ],
 	            url = 'gdeic/controls/template/',
 	            entry = './template/';
@@ -682,9 +656,12 @@
 		"./modal-select-panel.js": 5,
 		"./template": 7,
 		"./template.js": 7,
-		"./template/date-picker.html": 9,
-		"./template/file-upload.html": 10,
-		"./template/modal-panel.html": 11,
+		"./template/cascade.html": 9,
+		"./template/date-picker.html": 10,
+		"./template/file-upload.html": 11,
+		"./template/modal-panel.html": 12,
+		"./template/modal-select-panel-multi.html": 13,
+		"./template/modal-select-panel.html": 14,
 		"./tree-view": 6,
 		"./tree-view.js": 6
 	};
@@ -706,19 +683,37 @@
 /* 9 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"input-group\">\r\n    <input type=\"text\" class=\"form-control\" uib-datepicker-popup ng-model=\"ngModel\" is-open=\"opened\" min-date=\"minDate\" max-date=\"maxDate\"\r\n        datepicker-options=\"{ startingDay: 0 }\" date-disabled=\"dateDisabled(date, mode)\" ng-required=\"ngRequired\" ng-disabled=\"ngDisabled\"\r\n        current-text=\"今天\" clear-text=\"清除\" close-text=\"关闭\" />\r\n    <span class=\"input-group-btn\">\r\n        <button type=\"button\" class=\"btn btn-default\" ng-disabled=\"ngDisabled\" ng-click=\"open()\">\r\n            <i class=\"glyphicon glyphicon-calendar\"></i>\r\n        </button>\r\n    </span>\r\n</div>"
+	module.exports = "<select class=\"{{inputClass}}\" ng-model=\"selectedModel\" ng-change=\"setValue()\" ng-show=\"showWhenNoOption ? true : itemList.length > 0\" ng-required=\"ngRequired\">\r\n    <option value=\"\">--请选择--</option>\r\n    <option ng-repeat=\"i in itemList\" value=\"{{i.[[key]]}}\" label=\"{{i.[[value]]}}\"></option>   \r\n</select>"
 
 /***/ },
 /* 10 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\r\n    <input id=\"{{fileId}}\" class=\"form-control\" type=\"file\" style=\"display: none\" accept=\"{{accept}}\" />\r\n    <div class=\"input-group\">\r\n        <input type=\"text\" class=\"form-control\" style=\"background: #ffffff\" readonly ng-required=\"ngRequired\" placeholder=\"{{placeholder}}\"\r\n            ng-if=\"!hideFileName\" />\r\n        <span class=\"input-group-btn\">\r\n            <button class=\"btn btn-default\" type=\"button\">浏览</button>\r\n        </span>\r\n    </div>\r\n</div>"
+	module.exports = "<div class=\"input-group\">\r\n    <input type=\"text\" class=\"form-control\" uib-datepicker-popup ng-model=\"ngModel\" is-open=\"opened\" min-date=\"minDate\" max-date=\"maxDate\"\r\n        datepicker-options=\"{ startingDay: 0 }\" date-disabled=\"dateDisabled(date, mode)\" ng-required=\"ngRequired\" ng-disabled=\"ngDisabled\"\r\n        current-text=\"今天\" clear-text=\"清除\" close-text=\"关闭\" />\r\n    <span class=\"input-group-btn\">\r\n        <button type=\"button\" class=\"btn btn-default\" ng-disabled=\"ngDisabled\" ng-click=\"open()\">\r\n            <i class=\"glyphicon glyphicon-calendar\"></i>\r\n        </button>\r\n    </span>\r\n</div>"
 
 /***/ },
 /* 11 */
 /***/ function(module, exports) {
 
+	module.exports = "<div>\r\n    <input id=\"{{fileId}}\" class=\"form-control\" type=\"file\" style=\"display: none\" accept=\"{{accept}}\" />\r\n    <div class=\"input-group\">\r\n        <input type=\"text\" class=\"form-control\" style=\"background: #ffffff\" readonly ng-required=\"ngRequired\" placeholder=\"{{placeholder}}\"\r\n            ng-if=\"!hideFileName\" />\r\n        <span class=\"input-group-btn\">\r\n            <button class=\"btn btn-default\" type=\"button\">浏览</button>\r\n        </span>\r\n    </div>\r\n</div>"
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
 	module.exports = "<div gradual-show=\"isShow\" style=\"position:absolute; width:100%; height:100%; top:0\">\r\n    <div class=\"modal-select\" gradual-show=\"isShow\">\r\n        <div class=\"modal-select-header\">\r\n            <b>{{headerTitle}}</b>\r\n            <button type=\"button\" class=\"close\" ng-click=\"isShow = !isShow\">&times;</button>\r\n        </div>\r\n        <div class=\"modal-select-body\">\r\n            <ng-transclude></ng-transclude>\r\n        </div>\r\n        <div class=\"modal-select-footer\">\r\n            <div class=\"pull-right\">\r\n                <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"cancel(); isShow = !isShow\">\r\n                    <span class=\"glyphicon glyphicon-remove\"></span> 取消\r\n                </button>\r\n                <button type=\"button\" class=\"btn btn-warning btn-xs\" style=\"margin-left: 5px\" ng-if=\"$$isClear\" ng-click=\"clear()\">'\r\n                    <span class=\"glyphicon glyphicon-trash\"></span> 清空\r\n                </button>\r\n                <button type=\"button\" class=\"btn btn-primary btn-xs\" style=\"margin-left: 5px\" ng-click=\"ok()\">\r\n                <span class=\"glyphicon glyphicon-ok\"></span> 确定\r\n                </button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>"
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	module.exports = "<div gradual-show=\"isShow\" style=\"position:absolute; width:100%; height:100%; top:0\">\r\n    <div class=\"modal-select\">\r\n        <div class=\"modal-select-header\">\r\n            <b>{{headerTitle}}</b>\r\n            <button type=\"button\" class=\"close\" ng-click=\"isShow = !isShow\">&times;</button>\r\n        </div>\r\n        <div class=\"modal-select-filter\" ng-if=\"filterProperty\">\r\n            <div class=\"input-group\">\r\n                <input type=\"text\" class=\"form-control\" ng-model=\"search.[[filter]]\">\r\n                <span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-filter\"></span></span>\r\n            </div>\r\n        </div>\r\n        <div class=\"modal-select-body\">\r\n            <div class=\"text-center\" ng-show=\"!sourceList\"><br />\r\n                <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;正在加载..\r\n            </div>\r\n            <p ng-show=\"sourceList.length === 0\">无可选项</p>\r\n            <div class=\"checkbox\" ng-repeat=\"item in sourceList | filter:search\"\r\n                ng-show=\"sourceList\">\r\n                <label ng-class=\"{'highlight': isCheck(item)}\">\r\n                    <input type=\"checkbox\" name=\"items\" ng-checked=\"isCheck(item)\" ng-click=\"selectItem(item)\" />&nbsp;&nbsp;{{item.[[value]]}}\r\n                </label>\r\n            </div>\r\n        </div>'\r\n        <div class=\"modal-select-footer\">\r\n            <div class=\"pull-right\">\r\n                <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"isShow = !isShow\">\r\n                    <span class=\"glyphicon glyphicon-remove\"></span> 取消\r\n                </button>&nbsp;\r\n                <button type=\"button\" class=\"btn btn-warning btn-xs\" style=\"margin-left: 5px\" ng-click=\"clear()\">\r\n                    <span class=\"glyphicon glyphicon-trash\"></span> 清空\r\n                </button>&nbsp;'\r\n                <button type=\"button\" class=\"btn btn-primary btn-xs\" style=\"margin-left: 5px\" ng-click=\"ok()\">\r\n                    <span class=\"glyphicon glyphicon-ok\"></span> 确定\r\n                </button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>"
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	module.exports = "<div gradual-show=\"isShow\" style=\"position:absolute; width:100%; height:100%; top:0\">\r\n    <div class=\"modal-select\">\r\n        <div class=\"modal-select-header\">\r\n            <b>{{headerTitle}}</b>\r\n            <button type=\"button\" class=\"close\" ng-click=\"isShow = !isShow\">&times;</button>\r\n        </div>\r\n        <div class=\"modal-select-filter\" ng-if=\"filterProperty\">\r\n            <div class=\"input-group\">\r\n                <input type=\"text\" class=\"form-control\" ng-model=\"search.[[filter]]\">\r\n                <span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-filter\"></span></span>\r\n            </div>\r\n        </div>\r\n        <div class=\"modal-select-body\">\r\n            <div class=\"text-center\" ng-show=\"!sourceList\"><br />\r\n                <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;正在加载..\r\n            </div>\r\n            <p ng-show=\"sourceList.length === 0\">无可选项</p>\r\n            <div class=\"radio\" ng-repeat=\"item in sourceList | filter:search\"\r\n                ng-show=\"sourceList\">\r\n                <label ng-class=\"{'highlight': item.[[key]] === selectedItem.[[key]]}\">\r\n                    <input type=\"radio\" name=\"items\" ng-checked=\"isCheck(item)\" ng-click=\"selectItem(item)\" />&nbsp;&nbsp;{{[[value]]}}\r\n                </label>\r\n            </div>\r\n        </div>'\r\n        <div class=\"modal-select-footer\">\r\n            <div class=\"pull-right\">\r\n                <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"isShow = !isShow\">\r\n                    <span class=\"glyphicon glyphicon-remove\"></span> 取消\r\n                </button>&nbsp;\r\n                <button type=\"button\" class=\"btn btn-warning btn-xs\" style=\"margin-left: 5px\" ng-click=\"clear()\">\r\n                    <span class=\"glyphicon glyphicon-trash\"></span> 清空\r\n                </button>&nbsp;'\r\n                <button type=\"button\" class=\"btn btn-primary btn-xs\" style=\"margin-left: 5px\" ng-click=\"ok()\">\r\n                    <span class=\"glyphicon glyphicon-ok\"></span> 确定\r\n                </button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>"
 
 /***/ }
 /******/ ]);

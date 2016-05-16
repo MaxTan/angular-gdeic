@@ -44,15 +44,32 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ngApp = angular.module('ngGdeic', ['ngAnimate', 'ui.bootstrap', 'angular-linq']);
+	var ngApp = angular.module('ngGdeic', ['ngAnimate', 'ui.bootstrap', 'ngResource', 'angular-linq']);
 
-	__webpack_require__(1)(ngApp);
-	__webpack_require__(2)(angular);
-	__webpack_require__(7)(ngApp);
-	__webpack_require__(35)(ngApp);
+	__webpack_require__(18)(ngApp);
+	__webpack_require__(19)(angular);
+	__webpack_require__(24)(ngApp);
+	__webpack_require__(52)(ngApp);
 
 /***/ },
-/* 1 */
+/* 1 */,
+/* 2 */,
+/* 3 */,
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -68,20 +85,20 @@
 	};
 
 /***/ },
-/* 2 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (angular) {
 
-	    __webpack_require__(3)(angular);
-	    __webpack_require__(4)(angular);
-	    __webpack_require__(5)(angular);
-	    __webpack_require__(6)(angular);
+	    __webpack_require__(20)(angular);
+	    __webpack_require__(21)(angular);
+	    __webpack_require__(22)(angular);
+	    __webpack_require__(23)(angular);
 
 	};
 
 /***/ },
-/* 3 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = function (angular) {
@@ -173,7 +190,7 @@
 	};
 
 /***/ },
-/* 4 */
+/* 21 */
 /***/ function(module, exports) {
 
 	module.exports = function (angular) {
@@ -224,7 +241,7 @@
 	};
 
 /***/ },
-/* 5 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = function (angular) {
@@ -288,7 +305,7 @@
 	};
 
 /***/ },
-/* 6 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = function (angular) {
@@ -345,31 +362,31 @@
 	};
 
 /***/ },
-/* 7 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
 
-	    __webpack_require__(8)(ngModule);
-	    __webpack_require__(10)(ngModule);
-	    __webpack_require__(20)(ngModule);
-	    __webpack_require__(29)(ngModule);
-	    __webpack_require__(33)(ngModule);
+	    __webpack_require__(25)(ngModule);
+	    __webpack_require__(27)(ngModule);
+	    __webpack_require__(37)(ngModule);
+	    __webpack_require__(46)(ngModule);
+	    __webpack_require__(50)(ngModule);
 
 	};
 
 /***/ },
-/* 8 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
 
-	    __webpack_require__(9)(ngModule);
+	    __webpack_require__(26)(ngModule);
 
 	}
 
 /***/ },
-/* 9 */
+/* 26 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -397,26 +414,26 @@
 	};
 
 /***/ },
-/* 10 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
 
-	    __webpack_require__(11)(ngModule);
-	    __webpack_require__(12)(ngModule);
-	    __webpack_require__(13)(ngModule);
-	    __webpack_require__(14)(ngModule);
-	    __webpack_require__(15)(ngModule);
+	    __webpack_require__(28)(ngModule);
+	    __webpack_require__(29)(ngModule);
+	    __webpack_require__(30)(ngModule);
+	    __webpack_require__(31)(ngModule);
+	    __webpack_require__(32)(ngModule);
 
-	    __webpack_require__(16)(ngModule);
-	    __webpack_require__(17)(ngModule);
-	    __webpack_require__(18)(ngModule);
-	    __webpack_require__(19)(ngModule);
+	    __webpack_require__(33)(ngModule);
+	    __webpack_require__(34)(ngModule);
+	    __webpack_require__(35)(ngModule);
+	    __webpack_require__(36)(ngModule);
 
 	}
 
 /***/ },
-/* 11 */
+/* 28 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -464,7 +481,7 @@
 	};
 
 /***/ },
-/* 12 */
+/* 29 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -501,7 +518,7 @@
 	};
 
 /***/ },
-/* 13 */
+/* 30 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -531,7 +548,7 @@
 	};
 
 /***/ },
-/* 14 */
+/* 31 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -587,7 +604,7 @@
 	};
 
 /***/ },
-/* 15 */
+/* 32 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -623,7 +640,7 @@
 	};
 
 /***/ },
-/* 16 */
+/* 33 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -662,7 +679,7 @@
 	};
 
 /***/ },
-/* 17 */
+/* 34 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -702,7 +719,7 @@
 	};
 
 /***/ },
-/* 18 */
+/* 35 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -730,7 +747,7 @@
 	};
 
 /***/ },
-/* 19 */
+/* 36 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -753,19 +770,19 @@
 	};
 
 /***/ },
-/* 20 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
 
-	    __webpack_require__(21)(ngModule);
-	    __webpack_require__(22)(ngModule);
-	    __webpack_require__(23)(ngModule);
+	    __webpack_require__(38)(ngModule);
+	    __webpack_require__(39)(ngModule);
+	    __webpack_require__(40)(ngModule);
 
 	}
 
 /***/ },
-/* 21 */
+/* 38 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -806,7 +823,7 @@
 	};
 
 /***/ },
-/* 22 */
+/* 39 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -887,21 +904,21 @@
 	};
 
 /***/ },
-/* 23 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
 
-	    __webpack_require__(24)(ngModule);
-	    __webpack_require__(25)(ngModule);
-	    __webpack_require__(26)(ngModule);
-	    __webpack_require__(27)(ngModule);
-	    __webpack_require__(28)(ngModule);
+	    __webpack_require__(41)(ngModule);
+	    __webpack_require__(42)(ngModule);
+	    __webpack_require__(43)(ngModule);
+	    __webpack_require__(44)(ngModule);
+	    __webpack_require__(45)(ngModule);
 
 	}
 
 /***/ },
-/* 24 */
+/* 41 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1070,7 +1087,7 @@
 	};
 
 /***/ },
-/* 25 */
+/* 42 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1168,7 +1185,7 @@
 	};
 
 /***/ },
-/* 26 */
+/* 43 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1215,7 +1232,7 @@
 	};
 
 /***/ },
-/* 27 */
+/* 44 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1353,7 +1370,7 @@
 	};
 
 /***/ },
-/* 28 */
+/* 45 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1517,19 +1534,19 @@
 	};
 
 /***/ },
-/* 29 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
 
-	    __webpack_require__(30)(ngModule);
-	    __webpack_require__(31)(ngModule);
-	    __webpack_require__(32)(ngModule);
+	    __webpack_require__(47)(ngModule);
+	    __webpack_require__(48)(ngModule);
+	    __webpack_require__(49)(ngModule);
 
 	}
 
 /***/ },
-/* 30 */
+/* 47 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1549,7 +1566,7 @@
 	};
 
 /***/ },
-/* 31 */
+/* 48 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1583,7 +1600,7 @@
 	};
 
 /***/ },
-/* 32 */
+/* 49 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1685,17 +1702,17 @@
 	};
 
 /***/ },
-/* 33 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
 
-	    __webpack_require__(34)(ngModule);
+	    __webpack_require__(51)(ngModule);
 
 	}
 
 /***/ },
-/* 34 */
+/* 51 */
 /***/ function(module, exports) {
 
 	module.exports = function (ngModule) {
@@ -1888,7 +1905,7 @@
 	};
 
 /***/ },
-/* 35 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function (ngModule) {
@@ -1900,13 +1917,13 @@
 
 	    function runFunc($templateCache) {
 
-	        __webpack_require__(36)($templateCache);
+	        __webpack_require__(53)($templateCache);
 
 	    }
 	};
 
 /***/ },
-/* 36 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function ($templateCache) {
@@ -1927,22 +1944,22 @@
 	    $templateCache.put(url + 'blank.html', '<div></div>');
 	    for (; i < max; i++) {
 	        curr = templates[i];
-	        $templateCache.put(url + curr, __webpack_require__(37)(entry + curr));
+	        $templateCache.put(url + curr, __webpack_require__(54)(entry + curr));
 	    }
 	};
 
 /***/ },
-/* 37 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var map = {
-		"./template": 36,
-		"./template.js": 36,
-		"./template/confirm.html": 38,
-		"./template/error.html": 39,
-		"./template/hold-on.html": 40,
-		"./template/loading.html": 41,
-		"./template/paging.html": 42
+		"./template": 53,
+		"./template.js": 53,
+		"./template/confirm.html": 55,
+		"./template/error.html": 56,
+		"./template/hold-on.html": 57,
+		"./template/loading.html": 58,
+		"./template/paging.html": 59
 	};
 	function webpackContext(req) {
 		return __webpack_require__(webpackContextResolve(req));
@@ -1955,35 +1972,35 @@
 	};
 	webpackContext.resolve = webpackContextResolve;
 	module.exports = webpackContext;
-	webpackContext.id = 37;
+	webpackContext.id = 54;
 
 
 /***/ },
-/* 38 */
+/* 55 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"modal-header\">\r\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" ng-click=\"cancel()\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">Close</span></button>\r\n    <h4 class=\"modal-title\">{{title}}</h4>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <div class=\"text-center\">{{message}}</div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-default\" ng-click=\"cancel()\">取消</button>\r\n    <button class=\"btn btn-danger\" ng-click=\"ok()\">确定</button>\r\n</div>"
 
 /***/ },
-/* 39 */
+/* 56 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"error\" ng-show=\"isShowError\">\r\n    <div class=\"col-xs-offset-1 col-sm-offset-2 col-xs-10 col-sm-8 col-md-offset-3 col-md-6 error-body\">\r\n        <span class=\"fa fa-times-circle error-bg\"></span>\r\n        <p class=\"error-code\">Error：{{error.StatusCode}}</p>\r\n        <div class=\"error-content\">{{error.ErrorMsg}}</div>\r\n        <div class=\"error-btn\"><button type=\"button\" class=\"btn btn-primary btn-xs\" ng-click=\"clearMsg()\">确 定</button></div>\r\n    </div>\r\n</div>"
 
 /***/ },
-/* 40 */
+/* 57 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"holdOn\" ng-show=\"isHoldingOn\">\r\n    <div class=\"holdOn-body\">\r\n        <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;{{holdOnText || '正在操作，请稍后'}}...\r\n    </div>\r\n</div>"
 
 /***/ },
-/* 41 */
+/* 58 */
 /***/ function(module, exports) {
 
 	module.exports = "<div style=\"position: relative; min-height: 60px\">\r\n    <div class=\"{{loadingClass || 'text-center'}}\" style=\"position:absolute; width:100%; {{loadingStyle}}\" ng-show=\"isLoading\">\r\n        <br/>\r\n        <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;{{loadingText || '正在加载'}}...<br /><br />\r\n    </div>\r\n    <ng-transclude ng-class=\"{'invisible': isLoading}\"></ng-transclude>\r\n</div>"
 
 /***/ },
-/* 42 */
+/* 59 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\r\n    <div class=\"text-center\" style=\"border-top: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; padding-top: 20px; padding-bottom: 20px\"\r\n        ng-if=\"!hideAlert\" ng-show=\"pagingModel.pagingListLength === 0\">无匹配记录</div>\r\n    <div class=\"text-center\" ng-show=\"pagingModel.pagingListLength > pagingModel.itemsPerPage\">\r\n        <uib-pagination total-items=\"pagingModel.pagingListLength\" ng-model=\"pagingModel.currentPage\" max-size=\"5\" class=\"pagination-sm\"\r\n            boundary-link-numbers=\"true\" rotate=\"false\" previous-text=\"上一页\" next-text=\"下一页\" items-per-page=\"pagingModel.itemsPerPage\"\r\n            ng-change=\"pagingModel.paging(pagingModel.currentPage)\"></uib-pagination>\r\n    </div>\r\n</div>"

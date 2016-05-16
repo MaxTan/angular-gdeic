@@ -9,8 +9,8 @@ module.exports = function (ngModule) {
         return {
             restrict: 'EA',
             scope: {
-                treeData: '=',
                 templateUrl: '@',
+                treeData: '=',
                 isExpandRoot: '=',
                 isMultiChecked: '=',
                 selectedModel: '=',

@@ -3,12 +3,13 @@ module.exports = function (ngModule) {
 
     ngModule.directive('gdeicCascade', gdeicCascade);
 
-    gdeicCascade.$inject = ['$linq', '$gdeic'];
+    gdeicCascade.$inject = ['$templateCache', '$linq', '$gdeic'];
 
-    function gdeicCascade($linq, $gdeic) {
+    function gdeicCascade($templateCache, $linq, $gdeic) {
         return {
             restrict: 'EA',
             scope: {
+                templateUrl: '@',
                 inputClass: '@',
                 ngRequired: '=',
                 ngDisabled: '=',
@@ -26,10 +27,16 @@ module.exports = function (ngModule) {
                 queryParamsAsync: "@"
             },
             template: function (tElement, tAttrs) {
-                var template = '<select class="{{inputClass}}" ng-model="selectedModel" ng-change="setValue()" ng-show="showWhenNoOption ? true : itemList.length > 0" ng-required="ngRequired">'
-                    + '<option value="">--请选择--</option>'
-                    + '<option ng-repeat="i in itemList" value="{{i.' + tAttrs.keyProperty + '}}" label="{{i.' + tAttrs.valueProperty + '}}"></option>'
-                    + '</select>';
+                var template;
+
+                if (angular.isUndefined(tAttrs.templateUrl)) {
+                    template = $templateCache.get('gdeic/controls/template/cascade.html');
+                    template = template.replace(/\[\[key\]\]/g, tAttrs.keyProperty);
+                    template = template.replace(/\[\[value\]\]/g, tAttrs.valueProperty);
+                } else {
+                    template = '<span ng-include="\'' + tAttrs.templateUrl + '\'"></span>';
+                }
+
                 return template;
             },
             replace: true,
