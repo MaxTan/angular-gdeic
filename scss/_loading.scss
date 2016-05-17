@@ -1,0 +1,21 @@
+.gdeic-loading {
+    display: inline-block;
+    font-size: 12px;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    margin: 3em auto;
+    box-shadow: 0 -2em rgba(98, 98, 98, 1), 1.414em -1.414em rgba(98, 98, 98, 0.875), 2em 0 rgba(98, 98, 98, 0.75), 1.414em 1.414em rgba(98, 98, 98, 0.625), 0 2em rgba(98, 98, 98, 0.5), -1.414em 1.414em rgba(98, 98, 98, 0.375), -2em 0 rgba(98, 98, 98, 0.25), -1.414em -1.414em rgba(98, 98, 98, 0.125);
+    color: rgba(98, 98, 98, 1);
+    animation: gdeic-rotate 1s infinite forwards steps(8, end);
+    
+    +span{
+        display: block;
+    }
+}
+
+@keyframes gdeic-rotate {
+   100% {
+    transform: rotate(360deg);
+    }
+}

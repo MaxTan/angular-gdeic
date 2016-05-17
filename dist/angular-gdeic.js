@@ -51,6 +51,8 @@
 	__webpack_require__(24)(ngApp);
 	__webpack_require__(52)(ngApp);
 
+	__webpack_require__(60);
+
 /***/ },
 /* 1 */,
 /* 2 */,
@@ -536,7 +538,6 @@
 	                templateUrl: '@',
 	                isLoading: '=',
 	                loadingClass: '@',
-	                loadingStyle: '@',
 	                loadingText: '@'
 	            },
 	            templateUrl: function (tElement, tAttrs) {
@@ -1985,25 +1986,31 @@
 /* 56 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"error\" ng-show=\"isShowError\">\r\n    <div class=\"col-xs-offset-1 col-sm-offset-2 col-xs-10 col-sm-8 col-md-offset-3 col-md-6 error-body\">\r\n        <span class=\"fa fa-times-circle error-bg\"></span>\r\n        <p class=\"error-code\">Error：{{error.StatusCode}}</p>\r\n        <div class=\"error-content\">{{error.ErrorMsg}}</div>\r\n        <div class=\"error-btn\"><button type=\"button\" class=\"btn btn-primary btn-xs\" ng-click=\"clearMsg()\">确 定</button></div>\r\n    </div>\r\n</div>"
+	module.exports = "<div class=\"gdeic-error\" ng-show=\"isShowError\">\r\n    <div class=\"col-xs-offset-1 col-sm-offset-2 col-xs-10 col-sm-8 col-md-offset-3 col-md-6 gdeic-error-body\">\r\n        <span class=\"glyphicon glyphicon-remove-sign gdeic-error-bg\"></span>\r\n        <p class=\"gdeic-error-code\">Error：{{error.StatusCode}}</p>\r\n        <div class=\"gdeic-error-content\">{{error.ErrorMsg}}</div>\r\n        <div class=\"gdeic-error-btn\"><button type=\"button\" class=\"btn btn-primary btn-xs\" ng-click=\"clearMsg()\">确 定</button></div>\r\n    </div>\r\n</div>"
 
 /***/ },
 /* 57 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"holdOn\" ng-show=\"isHoldingOn\">\r\n    <div class=\"holdOn-body\">\r\n        <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;{{holdOnText || '正在操作，请稍后'}}...\r\n    </div>\r\n</div>"
+	module.exports = "<div class=\"gdeic-holdOn\" ng-show=\"isHoldingOn\">\r\n    <div class=\"gdeic-holdOn-body\">\r\n        <span class=\"gdeic-loading\"></span>\r\n        <span ng-if=\"holdOnText\">{{holdOnText + '...'}}</span>\r\n    </div>\r\n</div>"
 
 /***/ },
 /* 58 */
 /***/ function(module, exports) {
 
-	module.exports = "<div style=\"position: relative; min-height: 60px\">\r\n    <div class=\"{{loadingClass || 'text-center'}}\" style=\"position:absolute; width:100%; {{loadingStyle}}\" ng-show=\"isLoading\">\r\n        <br/>\r\n        <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;{{loadingText || '正在加载'}}...<br /><br />\r\n    </div>\r\n    <ng-transclude ng-class=\"{'invisible': isLoading}\"></ng-transclude>\r\n</div>"
+	module.exports = "<div>\r\n    <div class=\"{{loadingClass || 'text-center'}}\" ng-show=\"isLoading\" style=\"padding: 25px 0\">\r\n        <span class=\"gdeic-loading anime-spinner\"></span>\r\n        <span ng-if=\"loadingText\">{{loadingText + '...'}}</span>\r\n    </div>\r\n    <ng-transclude ng-class=\"{'invisible': isLoading}\"></ng-transclude>\r\n</div>"
 
 /***/ },
 /* 59 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\r\n    <div class=\"text-center\" style=\"border-top: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; padding-top: 20px; padding-bottom: 20px\"\r\n        ng-if=\"!hideAlert\" ng-show=\"pagingModel.pagingListLength === 0\">无匹配记录</div>\r\n    <div class=\"text-center\" ng-show=\"pagingModel.pagingListLength > pagingModel.itemsPerPage\">\r\n        <uib-pagination total-items=\"pagingModel.pagingListLength\" ng-model=\"pagingModel.currentPage\" max-size=\"5\" class=\"pagination-sm\"\r\n            boundary-link-numbers=\"true\" rotate=\"false\" previous-text=\"上一页\" next-text=\"下一页\" items-per-page=\"pagingModel.itemsPerPage\"\r\n            ng-change=\"pagingModel.paging(pagingModel.currentPage)\"></uib-pagination>\r\n    </div>\r\n</div>"
+
+/***/ },
+/* 60 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
 
 /***/ }
 /******/ ]);

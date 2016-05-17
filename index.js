@@ -5,4 +5,4 @@ require('./src/prototype')(angular);
 require('./src/component')(ngApp);
 require('./src/run')(ngApp);
 
-require('./style/common.scss');
+require('./scss/common.scss');
