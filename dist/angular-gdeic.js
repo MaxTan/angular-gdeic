@@ -1986,7 +1986,7 @@
 /* 56 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"gdeic-error\" ng-show=\"isShowError\">\r\n    <div class=\"col-xs-offset-1 col-sm-offset-2 col-xs-10 col-sm-8 col-md-offset-3 col-md-6 gdeic-error-body\">\r\n        <span class=\"glyphicon glyphicon-remove-sign gdeic-error-bg\"></span>\r\n        <p class=\"gdeic-error-code\">Error：{{error.StatusCode}}</p>\r\n        <div class=\"gdeic-error-content\">{{error.ErrorMsg}}</div>\r\n        <div class=\"gdeic-error-btn\"><button type=\"button\" class=\"btn btn-primary btn-xs\" ng-click=\"clearMsg()\">确 定</button></div>\r\n    </div>\r\n</div>"
+	module.exports = "<div class=\"gdeic-error\" ng-show=\"isShowError\">\r\n    <div class=\"col-xs-offset-1 col-sm-offset-2 col-xs-10 col-sm-8 col-md-offset-3 col-md-6 gdeic-error-body\">\r\n        <span class=\"glyphicon glyphicon-remove-sign gdeic-error-bg\"></span>\r\n        <h4 class=\"gdeic-error-code\">Error：{{error.StatusCode}}</h4>\r\n        <div class=\"gdeic-error-content\">{{error.ErrorMsg}}</div>\r\n        <button type=\"button\" class=\"btn btn-primary btn-xs gdeic-error-btn\" ng-click=\"clearMsg()\">确 定</button>\r\n    </div>\r\n</div>"
 
 /***/ },
 /* 57 */
