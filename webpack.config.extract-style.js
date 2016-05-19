@@ -18,8 +18,11 @@ module.exports = {
                 loader: 'raw-loader'
             }, {
                 test: /\.scss$/,
-                loader: 'style-loader!css-loader!sass-loader'
+                loader: ExtractTextPlugin.extract('css-loader!sass-loader')
             }
         ]
-    }
+    },
+    plugins: [
+        new ExtractTextPlugin('./css/' + (PROD ? '[name].min.css' : '[name].css'))
+    ]
 };
