@@ -444,15 +444,19 @@
 	            replace: true,
 	            link: function (scope, iElement, iAttrs, controller, transcludeFn) {
 	                var _originalValue;
-	                scope.search = {};
-	                if (scope.multiSelect === true) {
-	                    _originalValue = [];
-	                } else {
-	                    _originalValue = {};
-	                    Object.defineProperty(_originalValue, iAttrs.keyProperty, {
-	                        value: ''
-	                    });
-	                }
+
+	                (function () {
+	                    scope.search = {};
+	                    if (scope.multiSelect === true) {
+	                        _originalValue = [];
+	                    } else {
+	                        _originalValue = {};
+	                        Object.defineProperty(_originalValue, iAttrs.keyProperty, {
+	                            value: ''
+	                        });
+	                    }
+	                } ());
+
 
 	                scope.$watch('isShow', function (newValue) {
 	                    if (newValue) {
@@ -460,6 +464,23 @@
 	                            scope.selectedItem = angular.isArray(scope.ngModel) ? angular.copy(scope.ngModel) : _originalValue;
 	                        } else {
 	                            scope.selectedItem = angular.isObject(scope.ngModel) && !angular.isArray(scope.ngModel) ? angular.copy(scope.ngModel) : _originalValue;
+	                        }
+
+	                        if (angular.isUndefined(scope.templateUrl)) {
+	                            $gdeic.execAsync(function () {
+	                                var panel = iElement.children(),
+	                                    panelChildren = panel.children(),
+	                                    panelHeader = panelChildren.eq(0),
+	                                    panelFilter = panelChildren.eq(1),
+	                                    panelBody = panelChildren.eq(angular.isUndefined(scope.filterProperty) ? 1 : 2),
+	                                    panelFooter = panelChildren.eq(panelChildren.length - 1);
+
+	                                if (angular.isUndefined(scope.filterProperty)) {
+	                                    panelBody.css('height', (iElement[0].offsetHeight - panelHeader[0].offsetHeight - panelFooter[0].offsetHeight) + 'px');
+	                                } else {
+	                                    panelBody.css('height', (iElement[0].offsetHeight - panelHeader[0].offsetHeight - panelFilter[0].offsetHeight - panelFooter[0].offsetHeight) + 'px');
+	                                }
+	                            })
 	                        }
 	                    }
 	                });
@@ -719,13 +740,13 @@
 /* 13 */
 /***/ function(module, exports) {
 
-	module.exports = "<div gradual-show=\"isShow\" style=\"position:absolute; width:100%; height:100%; top:0\">\r\n    <div class=\"gdeic-modal-panel\">\r\n        <div class=\"gdeic-modal-panel-header\">\r\n            <b>{{headerTitle}}</b>\r\n            <button type=\"button\" class=\"close\" ng-click=\"isShow = !isShow\">&times;</button>\r\n        </div>\r\n        <div class=\"gdeic-modal-panel-filter\" ng-if=\"filterProperty\">\r\n            <div class=\"input-group\">\r\n                <input type=\"text\" class=\"form-control\" ng-model=\"search.[[filter]]\">\r\n                <span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-filter\"></span></span>\r\n            </div>\r\n        </div>\r\n        <div class=\"gdeic-modal-panel-body\">\r\n            <div class=\"text-center\" ng-show=\"!sourceList\"><br />\r\n                <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;正在加载..\r\n            </div>\r\n            <p ng-show=\"sourceList.length === 0\">无可选项</p>\r\n            <div class=\"checkbox\" ng-repeat=\"item in sourceList | filter:search\"\r\n                ng-show=\"sourceList\">\r\n                <label ng-class=\"{'highlight': isCheck(item)}\">\r\n                    <input type=\"checkbox\" name=\"items\" ng-checked=\"isCheck(item)\" ng-click=\"selectItem(item)\" />&nbsp;&nbsp;{{item.[[value]]}}\r\n                </label>\r\n            </div>\r\n        </div>'\r\n        <div class=\"gdeic-modal-panel-footer\">\r\n            <div class=\"pull-right\">\r\n                <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"isShow = !isShow\">\r\n                    <span class=\"glyphicon glyphicon-remove\"></span> 取消\r\n                </button>&nbsp;\r\n                <button type=\"button\" class=\"btn btn-warning btn-xs\" style=\"margin-left: 5px\" ng-click=\"clear()\">\r\n                    <span class=\"glyphicon glyphicon-trash\"></span> 清空\r\n                </button>&nbsp;'\r\n                <button type=\"button\" class=\"btn btn-primary btn-xs\" style=\"margin-left: 5px\" ng-click=\"ok()\">\r\n                    <span class=\"glyphicon glyphicon-ok\"></span> 确定\r\n                </button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>"
+	module.exports = "<div gradual-show=\"isShow\" style=\"position:absolute; width:100%; height:100%; top:0\">\r\n    <div class=\"gdeic-modal-panel\">\r\n        <div class=\"gdeic-modal-panel-header\">\r\n            <b>{{headerTitle}}</b>\r\n            <button type=\"button\" class=\"close\" ng-click=\"isShow = !isShow\">&times;</button>\r\n        </div>\r\n        <div class=\"gdeic-modal-panel-filter\" ng-if=\"filterProperty\">\r\n            <div class=\"input-group\">\r\n                <input type=\"text\" class=\"form-control\" ng-model=\"search.[[filter]]\">\r\n                <span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-filter\"></span></span>\r\n            </div>\r\n        </div>\r\n        <div class=\"gdeic-modal-panel-body\">\r\n            <div class=\"text-center\" ng-show=\"!sourceList\"><br />\r\n                <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;正在加载..\r\n            </div>\r\n            <p ng-show=\"sourceList.length === 0\">无可选项</p>\r\n            <div class=\"checkbox\" ng-repeat=\"item in sourceList | filter:search\"\r\n                ng-show=\"sourceList\">\r\n                <label ng-class=\"{'highlight': isCheck(item)}\">\r\n                    <input type=\"checkbox\" name=\"items\" ng-checked=\"isCheck(item)\" ng-click=\"selectItem(item)\" />&nbsp;&nbsp;{{item.[[value]]}}\r\n                </label>\r\n            </div>\r\n        </div>\r\n        <div class=\"gdeic-modal-panel-footer\">\r\n            <div class=\"pull-right\">\r\n                <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"isShow = !isShow\">\r\n                    <span class=\"glyphicon glyphicon-remove\"></span> 取消\r\n                </button>&nbsp;\r\n                <button type=\"button\" class=\"btn btn-warning btn-xs\" style=\"margin-left: 5px\" ng-click=\"clear()\">\r\n                    <span class=\"glyphicon glyphicon-trash\"></span> 清空\r\n                </button>&nbsp;\r\n                <button type=\"button\" class=\"btn btn-primary btn-xs\" style=\"margin-left: 5px\" ng-click=\"ok()\">\r\n                    <span class=\"glyphicon glyphicon-ok\"></span> 确定\r\n                </button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>"
 
 /***/ },
 /* 14 */
 /***/ function(module, exports) {
 
-	module.exports = "<div gradual-show=\"isShow\" style=\"position:absolute; width:100%; height:100%; top:0\">\r\n    <div class=\"gdeic-modal-panel\">\r\n        <div class=\"gdeic-modal-panel-header\">\r\n            <b>{{headerTitle}}</b>\r\n            <button type=\"button\" class=\"close\" ng-click=\"isShow = !isShow\">&times;</button>\r\n        </div>\r\n        <div class=\"gdeic-modal-panel-filter\" ng-if=\"filterProperty\">\r\n            <div class=\"input-group\">\r\n                <input type=\"text\" class=\"form-control\" ng-model=\"search.[[filter]]\">\r\n                <span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-filter\"></span></span>\r\n            </div>\r\n        </div>\r\n        <div class=\"gdeic-modal-panel-body\">\r\n            <div class=\"text-center\" ng-show=\"!sourceList\"><br />\r\n                <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;正在加载..\r\n            </div>\r\n            <p ng-show=\"sourceList.length === 0\">无可选项</p>\r\n            <div class=\"radio\" ng-repeat=\"item in sourceList | filter:search\"\r\n                ng-show=\"sourceList\">\r\n                <label ng-class=\"{'highlight': item.[[key]] === selectedItem.[[key]]}\">\r\n                    <input type=\"radio\" name=\"items\" ng-checked=\"isCheck(item)\" ng-click=\"selectItem(item)\" />&nbsp;&nbsp;{{[[value]]}}\r\n                </label>\r\n            </div>\r\n        </div>'\r\n        <div class=\"gdeic-modal-panel-footer\">\r\n            <div class=\"pull-right\">\r\n                <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"isShow = !isShow\">\r\n                    <span class=\"glyphicon glyphicon-remove\"></span> 取消\r\n                </button>&nbsp;\r\n                <button type=\"button\" class=\"btn btn-warning btn-xs\" style=\"margin-left: 5px\" ng-click=\"clear()\">\r\n                    <span class=\"glyphicon glyphicon-trash\"></span> 清空\r\n                </button>&nbsp;'\r\n                <button type=\"button\" class=\"btn btn-primary btn-xs\" style=\"margin-left: 5px\" ng-click=\"ok()\">\r\n                    <span class=\"glyphicon glyphicon-ok\"></span> 确定\r\n                </button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>"
+	module.exports = "<div gradual-show=\"isShow\" style=\"position:absolute; width:100%; height:100%; top:0\">\r\n    <div class=\"gdeic-modal-panel\">\r\n        <div class=\"gdeic-modal-panel-header\">\r\n            <b>{{headerTitle}}</b>\r\n            <button type=\"button\" class=\"close\" ng-click=\"isShow = !isShow\">&times;</button>\r\n        </div>\r\n        <div class=\"gdeic-modal-panel-filter\" ng-if=\"filterProperty\">\r\n            <div class=\"input-group\">\r\n                <input type=\"text\" class=\"form-control\" ng-model=\"search.[[filter]]\">\r\n                <span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-filter\"></span></span>\r\n            </div>\r\n        </div>\r\n        <div class=\"gdeic-modal-panel-body\">\r\n            <div class=\"text-center\" ng-show=\"!sourceList\"><br />\r\n                <span class=\"fa fa-spinner anime-spinner\"></span>&nbsp;正在加载..\r\n            </div>\r\n            <p ng-show=\"sourceList.length === 0\">无可选项</p>\r\n            <div class=\"radio\" ng-repeat=\"item in sourceList | filter:search\"\r\n                ng-show=\"sourceList\">\r\n                <label ng-class=\"{'highlight': item.[[key]] === selectedItem.[[key]]}\">\r\n                    <input type=\"radio\" name=\"items\" ng-checked=\"isCheck(item)\" ng-click=\"selectItem(item)\" />&nbsp;&nbsp;{{[[value]]}}\r\n                </label>\r\n            </div>\r\n        </div>\r\n        <div class=\"gdeic-modal-panel-footer\">\r\n            <div class=\"pull-right\">\r\n                <button type=\"button\" class=\"btn btn-default btn-xs\" ng-click=\"isShow = !isShow\">\r\n                    <span class=\"glyphicon glyphicon-remove\"></span> 取消\r\n                </button>&nbsp;\r\n                <button type=\"button\" class=\"btn btn-warning btn-xs\" style=\"margin-left: 5px\" ng-click=\"clear()\">\r\n                    <span class=\"glyphicon glyphicon-trash\"></span> 清空\r\n                </button>&nbsp;\r\n                <button type=\"button\" class=\"btn btn-primary btn-xs\" style=\"margin-left: 5px\" ng-click=\"ok()\">\r\n                    <span class=\"glyphicon glyphicon-ok\"></span> 确定\r\n                </button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>"
 
 /***/ },
 /* 15 */
